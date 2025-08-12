@@ -1,5 +1,6 @@
+import math
 from typing import Tuple
-from typing import Sequence
+from typing import Sequence, List
 from math import cos, tau
 
 def trajectory_line_pos(t: float,
@@ -78,6 +79,31 @@ def source_tones(t: float,
     for f, A, phi in zip(freqs, amps, phases):
         s += A * cos(tau * f * t + phi)  # tau = 2π
     return s
+
+def rms(x: Sequence[float]) -> float:
+    """Root-mean-square of a real-valued sequence. Empty -> 0.0."""
+    if len(x) == 0:
+        return 0.0
+
+    sum_squares = 0.0
+    for xi in x:
+        sum_squares += xi * xi
+
+    mean_squares = sum_squares / len(x)
+    return math.sqrt(mean_squares)
+
+def normalize_power(x: Sequence[float], target_rms: float) -> List[float]:
+    """Return a copy of x scaled so RMS == target_rms."""
+    current_rms = rms(x)
+
+    if current_rms == 0.0 or target_rms <= 0.0:
+        return list(x)
+
+    scale = target_rms / current_rms
+    scaled_x = []
+    for value in x:
+        scaled_x.append(value * scale)
+    return scaled_x
 
 
 
